@@ -1,0 +1,5 @@
+# ignore Jalangi generated files
+*_jalangi_.js
+*_jalangi_.json
+# ignore emacs backups
+*~
