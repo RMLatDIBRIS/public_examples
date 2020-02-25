@@ -1,0 +1,12 @@
+// non-exclusive
+// non exclusive use of resources
+// works with traces generated from list11-non-exclusive.js
+
+acquire(id) matches {event:'func_pre',name:'acquire',args:[_,id,...]};
+release(id) matches {event:'func_pre',name:'release',args:[_,id,...]};
+use(id) matches {event:'func_pre',name:'use',args:[_,id,...]};
+
+relevant matches acquire(_) | release(_) | use(_);
+
+Main = relevant >> Resources;
+Resources = {let id; acquire(id) (use(id)* release(id) | Resources)}?;

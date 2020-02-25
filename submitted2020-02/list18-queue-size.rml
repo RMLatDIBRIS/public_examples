@@ -1,0 +1,16 @@
+// single FIFO queue with enqueue, dequeue and size
+// works with traces generated from list18-queue-size.js
+
+enq(val) matches {event:'func_pre',name:'enqueue',args:[val]};
+deq(val) matches  {event:'func_post',name:'dequeue',res:val};
+size(s) matches {event:'func_post',name:'size',res:s};
+enq matches enq(_);
+deq matches deq(_);
+enqDeq matches enq | deq;
+
+relevant matches enq | deq | size(_);
+
+Queue = {let val;enq(val)((deq|Queue)/\(deq>>deq(val)all))}?;
+Size<s> = ((size(s)Size<s>)\/(enq Size<s+1>)\/deq Size<s-1>)?; // no need to check the size for deq, this is already done by Queue 
+// Size<s> = (size(s)Size<s>)\/(enq Size<s+1>)\/if(s>0)deq Size<s-1>else empty;
+Main = relevant>>((enqDeq>>Queue)/\Size<0>);

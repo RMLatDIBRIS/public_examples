@@ -1,0 +1,11 @@
+// queue5
+// single FIFO queue with enqueue and dequeue 
+// works with traces generated from list17-queue.js
+
+enq(val) matches {event:'func_pre',name:'enqueue',args:[val]};
+deq(val) matches  {event:'func_post',name:'dequeue',res:val};
+deq matches deq(_);
+relevant matches enq(_) | deq;
+
+Main=relevant>>Queue; 
+Queue={let val; enq(val) ((Queue|deq(val))/\(deq>>deq(val) all))}?;

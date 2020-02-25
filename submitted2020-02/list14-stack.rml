@@ -1,0 +1,9 @@
+// stack1: single stack with push and pop
+// works with traces generated from list14-stack.js
+
+push(val) matches {event:'func_pre',name:'mypush',args:[val]};
+pop(val) matches  {event:'func_post',name:'mypop',res:val};
+relevant matches push(_)|pop(_);
+
+Main = relevant >> Stack;
+Stack = { let val; push(val) Stack pop(val) }*;
