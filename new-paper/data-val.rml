@@ -1,0 +1,7 @@
+// shows that monitors can implicitly manage objects and arrays as data values
+out(val) matches {event:'func_post',name:'output',res:val};
+in(val) matches {event:'func_pre',name:'input',args:[val]};
+
+relevant matches out(_) | in(_);
+
+Main = relevant>>{let val;out(val) in(val)};

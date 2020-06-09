@@ -1,0 +1,4 @@
+{"event":"func_pre","name":"output","id":1,"args":[],"targetId":2,"argIds":[]}
+{"event":"func_post","name":"output","res":[{"x":1,"y":2},{"w":0,"z":1}],"args":[],"resultId":3}
+{"event":"func_pre","name":"input","id":4,"args":[[{"y":2,"x":1},{"z":1,"w":0}]],"targetId":2,"argIds":[5]}
+{"event":"func_post","name":"input","args":[[{"y":2,"x":1},{"z":1,"w":0}]]}

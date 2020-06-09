@@ -1,0 +1,17 @@
+// single set with add and delete operations
+// works with traces generated from list19-set.js
+
+acquire(el) matches {event:'func_post',name:'myadd',args:[el],res:true};
+use(el) matches {event:'func_post',name:'myadd',args:[el],res:false};
+release(el) matches {event:'func_post',name:'mydelete',args:[el],res:true};
+no_use(el) matches {event:'func_post',name:'mydelete',args:[el],res:false};
+
+no_use matches no_use(_);
+acqRelNoUse(el) matches acquire(el) | release(el) | no_use(el);
+
+relevant matches acqRelNoUse(_)  | use(_);
+
+Main = relevant>>Set!;
+
+Set = (no_use* {let el; acquire(el) ((Set | use(el)* release(el)) /\
+        acqRelNoUse(el) >> (release(el) all))})?;
