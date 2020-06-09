@@ -1,0 +1,29 @@
+// lists_iterators: multiple iterators over multiple lists, weak version
+// works with traces generated from lists-iterators.js
+// verifies only that next(id) occurs after hasNext(id,true) and that the result of hasNext(id,res) can change only after next(id)
+// multiple consecutive occurrences of hasNext are allowed, as long as they are coherent
+// iterators are not required to be fully consumed
+
+
+list(id) matches {event:'func_pre',name:'add'|'remove',args:[id,...]}; // track only structural modifications
+hasNext(id,res) matches {event:'func_post',name:'hasNext',res:res,args:[id]};
+next(id) matches {event:'func_pre',name:'next',args:[id]};
+newIter(lsid,itid) matches {event:'func_post',name:'iterator',res:itid,args:[lsid]};
+freeIter(id) matches {event:'func_post',name:'free',res:id};
+
+newIter(id) matches newIter(_,id);
+hasNext_or_next(id) matches hasNext(id,_) | next(id);
+iterator matches newIter(_) | hasNext_or_next(_) | freeIter(_);
+not_newIter not matches newIter(_);
+list_or_iter(lsid,itid) matches hasNext_or_next(itid) | freeIter(itid) | list(lsid);
+
+relevant matches iterator | list(_);
+
+Main = relevant >> ListIterators;
+ListIterators = ListSafe /\ iterator >> Iterators;
+
+ListSafe = not_newIter* {let lsid,itid; newIter(lsid,itid)(ListSafeIter<lsid,itid> /\ ListSafe)}?;
+ListSafeIter<lsid,itid> = list_or_iter(lsid,itid) >> hasNext_or_next(itid)* list(lsid)* freeIter(itid) all;
+
+Iterators = {let id; newIter(id)(Iterator<id> freeIter(id)|Iterators)}?;
+Iterator<id> = ((hasNext(id,true)+ next(id))* hasNext(id,false)+)!;

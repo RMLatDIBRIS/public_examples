@@ -1,0 +1,15 @@
+// priority-queue1
+// single priority queue with no repetitions, enqueue and dequeue 
+// works with traces generated from queue-no-rep.js
+
+enq(val) matches {event:'func_pre',name:'enqueue',args:[val]};
+deq(val) matches  {event:'func_post',name:'dequeue',res:val};
+
+deq_geq(val) matches deq(val2) with val2 >= val;
+deq matches deq(_);
+relevant matches deq | enq(_);
+
+Main=relevant>>(Queue/\Sorted)!;
+
+Queue = {let val; enq(val) (enq(val)* deq(val) | Queue)}; 
+Sorted = {let val; enq(val) ((deq_geq(val) >> deq(val) all) /\ Sorted)} \/ (deq Sorted);

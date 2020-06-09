@@ -1,0 +1,15 @@
+// alt-bit-gen: alternating bit protocol with arbitrary message types
+// works with traces generated from alt-bit.js with any arguments 
+
+msg(ty) matches {event:'func_pre',name:'msg',args:[ty]};
+ack(ty) matches {event:'func_pre',name:'ack',args:[ty]};
+msg matches msg(_);
+ack matches ack(_);
+type(ty) matches msg(ty)|ack(ty);
+
+relevant matches type(_);
+
+Main = relevant >> (msg>>msg(1) BS<1>) /\ MA;
+BS<ty> = {let ty2; msg(ty2) if(ty2==ty+1) BS<ty2> else MM<2,ty>};
+MM<ty,mx> = msg(ty) if(ty>=mx) MM<1,mx> else MM<ty+1,mx>; 
+MA = {let ty; msg(ty) ((type(ty) >> ack(ty) all) /\ (ack(ty) | MA))};

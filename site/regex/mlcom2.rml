@@ -1,0 +1,13 @@
+// multi-line C comments, built from  a DFA 
+
+star matches {event:'func_pre',name:'star'};
+slash matches {event:'func_pre',name:'slash'};
+other matches {event:'func_pre',name:'other'};
+
+not_star_slash matches other;
+not_star matches slash | other;
+relevant matches star | slash | other;
+
+Main=relevant>>slash star Inner;
+Inner=not_star Inner \/ star MayStop;
+MayStop=slash \/ star MayStop \/ not_star_slash Inner;

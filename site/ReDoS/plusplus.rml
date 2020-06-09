@@ -1,0 +1,7 @@
+a matches {event:'func_pre',name:'a'};
+b matches {event:'func_pre',name:'b'};
+
+relevant matches a|b;
+// relevant matches a|{event:'func_pre',name:'b'}; // this does not work
+
+Main = relevant >> (a+)+;

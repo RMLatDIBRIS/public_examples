@@ -1,0 +1,19 @@
+// stack2: single stack with push, pop and size
+// works with traces generated from push-pop-size-single.js
+
+push(val) matches {event:'func_pre',name:'mypush',args:[val]};
+pop(val) matches  {event:'func_post',name:'mypop',res:val};
+size(s) matches {event:'func_post',name:'size',res:s};
+relevant matches push(_)|pop(_)|size(_);
+
+// event types needed for the 'divide et impera' approach 
+push matches push(_); 
+pop matches pop(_); 
+not_size not matches size(_);
+
+Main=relevant >> Stack<0>!; 
+// Stack<s> = size(s)* { let val; push(val) Stack<s+1> pop(val) Stack<s> }?;
+// Stack<s> = size(s)* { let val; push(val)  Stack<s+1> pop(val) size(s)* }*; // equivalent version, maybe less readable?
+Stack<s> = size(s) Stack<s> \/ { let val; push(val) Stack<s+1> pop(val) Stack<s> }?; // equivalent version, more readable?
+// Main = relevant >>((not_size>>Stack)/\Size<0>)!; Stack = { let val; push(val) Stack pop(val) }*;  Size<s> = (size(s) Size<s> \/ pop Size<s-1> \/ push Size<s+1>)?; // 'divide et impera' approach
+

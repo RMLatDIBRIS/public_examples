@@ -1,0 +1,14 @@
+// alt-bit: alternating bit protocol with two message types
+// works with traces generated from alt-bit.js with default second argument 
+
+msg(ty) matches {event:'func_pre',name:'msg',args:[ty]};
+ack(ty) matches {event:'func_pre',name:'ack',args:[ty]};
+msg matches msg(_);
+ack matches ack(_);
+type(ty) matches msg(ty)|ack(ty);
+
+relevant matches type(_);
+
+Main = relevant >> (msg>>MM) /\ MA;
+MM = msg(1)msg(2)MM;
+MA = {let ty; msg(ty) ((type(ty) >> ack(ty) all) /\ (ack(ty) | MA))};

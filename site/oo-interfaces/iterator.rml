@@ -1,0 +1,14 @@
+// iterator: single iterator, strong version
+
+// works with traces generated from iterator.js
+// enforces best practice: hasNext can only be called once per try, hasNext(true) requires next to be called,
+// the iterator must be fully consumed
+
+hasNext(res) matches {event:'func_post',name:'hasNext',res:res,args:[]};
+next matches {event:'func_pre',name:'next',args:[]};
+
+relevant matches hasNext(_) | next;
+
+Main = relevant >> Iterator;
+Iterator = (hasNext(true) next)* hasNext(false);
+

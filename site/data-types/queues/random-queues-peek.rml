@@ -1,0 +1,16 @@
+// queue2
+// single randomized queue with enqueue, dequeue and peek
+// works with traces generated from random-queues.js
+
+enq(val) matches {event:'func_pre',name:'enqueue',args:[val]};
+deq(val) matches  {event:'func_post',name:'dequeue',res:val};
+peek(val) matches  {event:'func_post',name:'peek',res:val};
+peek_deq matches peek(_) | deq(_);
+relevant matches enq(_) | peek_deq;
+
+Main = relevant>>(Queue/\peek_deq>>Seq)!; 
+Queue = {let val; enq(val) ( peek(val)*deq(val) | Queue)}; 
+Seq = {let val; peek(val)*deq(val)}*;
+
+
+

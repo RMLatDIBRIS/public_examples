@@ -1,0 +1,11 @@
+// derivative
+// derivative anomaly detection for single or multiple sensors
+// works with traces generated from derivative.js
+
+sensor(val,time) matches {event:'func_post',name:'sensor',res:{value:val,timestamp:time}};
+check_der(val1,time1,val2,time2) matches sensor(val2,time2)
+			       with abs(delta) <= 1 && delta==(val2-val1)/(time2-time1); 
+relevant matches sensor(_,_);
+
+Main = relevant >> {let val1,time1; sensor(val1,time1) CheckDer<val1,time1>}!;
+CheckDer<val1,time1> = {let val2, time2; check_der(val1,time1,val2,time2) CheckDer<val2,time2>};

@@ -1,0 +1,12 @@
+// queue5
+// single FIFO queue with enqueue and dequeue 
+// works with traces generated from fifo-queues.js
+
+enq(val) matches {event:'func_pre',name:'enqueue',args:[val]};
+deq(val) matches  {event:'func_post',name:'dequeue',res:val};
+deq matches deq(_);
+relevant matches enq(_) | deq;
+
+Main=relevant>>Queue!; 
+Queue={let val; enq(val) ((deq|Queue)/\(deq>>deq(val) all))};
+

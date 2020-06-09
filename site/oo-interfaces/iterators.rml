@@ -1,0 +1,15 @@
+// iterators: multiple iterators, strong version
+// works with traces generated from iterators.js
+// enforces best practice: hasNext can only be called once per try, hasNext(id,true) requires next(id) to be called,
+// iterators must be fully consumed
+
+hasNext(id,res) matches {event:'func_post',name:'hasNext',res:res,args:[id]};
+next(id) matches {event:'func_pre',name:'next',args:[id]};
+newIter(id) matches {event:'func_post',name:'iterator',res:id,args:[]};
+
+relevant matches hasNext(_,_) | next(_) | newIter(_);
+
+Main = relevant >> Iterators;
+Iterators = {let id; newIter(id)(Iterator<id>|Iterators)}?;
+Iterator<id> = (hasNext(id,true) next(id))* hasNext(id,false);
+

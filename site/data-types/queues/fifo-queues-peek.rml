@@ -1,0 +1,15 @@
+// queue6
+// single FIFO queue with enqueue, dequeue and peek
+// works with traces generated from fifo-queues-peek.js
+
+enq(val) matches {event:'func_pre',name:'enqueue',args:[val]};
+deq(val) matches  {event:'func_post',name:'dequeue',res:val};
+peek(val) matches  {event:'func_post',name:'peek',res:val};
+deq matches deq(_);
+peek matches peek(_);
+peek_deq matches peek | deq;
+relevant matches enq(_) | peek_deq;
+
+Main=relevant>>Queue!; 
+Queue={let val; enq(val) ((peek* deq|Queue)/\(peek_deq>>peek(val)* deq(val) all))};
+

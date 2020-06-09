@@ -1,0 +1,13 @@
+// non-exclusive2
+// non exclusive use of resources
+// works with traces generated from non-exclusive-complete.js
+
+acquire(eid,rid) matches {event:'func_pre',name:'acquire',args:[eid,rid,...]};
+release(eid,rid) matches {event:'func_pre',name:'release',args:[eid,rid,...]};
+use(eid,rid) matches {event:'func_pre',name:'use',args:[eid,rid,...]};
+
+notAcqRel(eid,rid) not matches acquire(eid,rid) | release(eid,rid);
+relevant matches acquire(_,_) | release(_,_) | use(_,_);
+
+Main = relevant >> Resources;
+Resources = {let eid,rid; acquire(eid,rid) ((Resources | use(eid,rid)* release(eid,rid)) /\ notAcqRel(eid,rid)* release(eid,rid) all)}?;

@@ -1,0 +1,11 @@
+// set1: single set with add and delete
+// works with traces generated from add-delete-single.js
+
+add(el,res) matches {event:'func_post',name:'myadd',args:[el],res:res};
+del(el,res) matches {event:'func_post',name:'mydelete',args:[el],res:res};
+del_false matches del(_,false); 
+not_add_true_del(el) not matches add(el,true) | del(el,_);
+relevant matches add(_,_) | del(_,_);
+
+Main = relevant>>Set!;
+Set = del_false* {let el; add(el,true) ((Set | add(el,false)* del(el,true)) /\ not_add_true_del(el)* del(el,true) all)}?;

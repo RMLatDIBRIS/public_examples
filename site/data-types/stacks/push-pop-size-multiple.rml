@@ -1,0 +1,27 @@
+// stacks: multiple stacks with push, pop and size
+// works with traces generated from push-pop-size-multiple.js
+
+new(id) matches {event:'func_post',name:'mynew',res:id};
+free(id) matches {event:'func_pre',name:'myfree',args:[id]};
+push(id,val) matches {event:'func_pre',name:'mypush',args:[id,val]};
+pop(id,val) matches  {event:'func_post',name:'mypop',args:[id],res:val};
+size(id,s) matches {event:'func_post',name:'mysize',args:[id],res:s};
+relevant matches new(_) | free(_) | push(_,_) | pop(_,_) | size(_,_);
+
+// event types needed for the 'divide et impera' approach 
+push matches push(_,_); 
+pop matches pop(_,_); 
+not_size not matches size(_,_);
+
+
+Main = relevant >> Stacks;
+Stacks = {let id; new(id) (Stacks | (Single<id> free(id)))}?; 
+
+Single<id> = ((not_size>>Stack<id>)/\Size<id,0>)!;
+Stack<id> = { let val; push(id,val) Stack<id> pop(id,val) }*;
+Size<id,s> = (size(id,s) Size<id,s> \/ pop Size<id,s-1> \/ push Size<id,s+1>)?; 
+
+// no 'divide et impera'
+// Stacks = { let id; new(id) (Stacks | (Stack<id,0>! free(id))) }?; 
+// Stack<id,s> = size(id,s)* { let val; push(id,val) Stack<id,s+1> pop(id,val) Stack<id,s> }?;
+

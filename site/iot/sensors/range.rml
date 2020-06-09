@@ -1,0 +1,10 @@
+// range
+// range anomaly detection for single or multiple sensors
+// works with traces generated from range.js
+
+sensor(val) matches {event:'func_post',name:'sensor',res:{value:val}};
+sensor_in_range(low,high) matches sensor(val) with low<=val && val<=high;
+relevant matches sensor(_); 
+
+Main = relevant>>CheckRange<22,24>;
+CheckRange<low,high> = sensor_in_range(low,high)*;

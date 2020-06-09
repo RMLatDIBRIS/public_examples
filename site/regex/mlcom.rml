@@ -1,0 +1,11 @@
+// multi-line C comments, built from regexp /\*/*(([^*/][^*]*)?\*+)*/
+
+star matches {event:'func_pre',name:'star'};
+slash matches {event:'func_pre',name:'slash'};
+other matches {event:'func_pre',name:'other'};
+
+not_star_slash matches other;
+not_star matches slash | other;
+relevant matches star | slash | other;
+
+Main=relevant>>slash star slash* ((not_star_slash not_star*)?star+)* slash;
