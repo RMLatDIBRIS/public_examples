@@ -1,0 +1,10 @@
+insert(index,val) matches {event:'func_pre',name:'my_insert',args:[index,val]};
+remove(index,val) matches  {event:'func_post',name:'my_remove',args:[index],res:val};
+size(s) matches {event:'func_post',name:'my_size',args:[],res:s};
+
+insert_sz(s) matches insert(index,_) with index >= 0 && index <= s;
+remove_sz(s) matches remove(index,_) with index >= 0 && index < s;
+relevant matches insert(_,_)|remove(_,_)|size(_);
+
+Main = relevant >> List<0>;
+List<s> = size(s)* (insert_sz(s) List<s+1> remove_sz(s+1) List<s>)?;

@@ -1,0 +1,36 @@
+// Basic events
+insert(index,elem) matches {event:'func_pre',name:'my_insert',args:[index,elem]};
+remove(index,elem) matches  {event:'func_post',name:'my_remove',args:[index],res:elem};
+size(size) matches {event:'func_post',name:'my_size',args:[],res:size};
+get(index,elem) matches {event:'func_post',name:'my_get',args:[index],res:elem};
+
+// Additional events for Main
+relevant matches insert(_,_)|remove(_,_)|size(_)|get(_,_);
+add_rm_get matches insert(_,_)|remove(_,_)|get(_,_);
+
+// Additional events for CheckIndex
+insert_in_bounds(size) matches insert(index,_) with index >= 0 && index <= size;
+remove_in_bounds(size) matches remove(index,_) with index >= 0 && index < size;
+get_in_bounds(size) matches get(index,_) with index >= 0 && index < size;
+get_size(size) matches size(size)|get_in_bounds(size);
+
+// Additional events for CheckElem
+not_insert not matches  insert(_,_);
+
+// Additional events for GetElem
+increased(i) matches insert(index,_) with index <= i;
+decreased(i) matches remove(index,_) with index < i;
+irrelevant_modification(i) matches insert(index,_) | remove(index,_) with index > i;
+irrelevant_get(i) matches get(index,_)  with index != i;
+irrelevant(i) matches irrelevant_modification(i) | irrelevant_get(i);
+					
+Main = relevant >> (CheckIndex<0> /\ add_rm_get >> CheckElem)!;
+CheckIndex<size> =
+    get_size(size)* (insert_in_bounds(size) CheckIndex<size+1> \/ remove_in_bounds(size) CheckIndex<size-1>);
+CheckElem =
+    not_insert* {let index,elem; insert(index,elem) (GetElem<index,elem> /\ CheckElem)};
+GetElem<index,elem> =
+    (irrelevant(index) \/ get(index,elem)) GetElem<index,elem> \/ 
+    increased(index) GetElem<index+1,elem> \/
+    decreased(index) GetElem<index-1,elem> \/
+    remove(index,elem) all;
