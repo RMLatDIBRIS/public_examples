@@ -1,5 +1,0 @@
-msg(ty) matches {event:'func_pre',name:'msg',args:[ty]};
-relevant matches msg(_);
-
-Msg<inf,sup> = if(inf<=sup) msg(inf) Msg<inf+1,sup> else empty;
-Main=relevant>>Msg<1,4>*!;

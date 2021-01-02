@@ -1,7 +1,0 @@
-// shows that the deterministic semantics is not complete w.r.t. the non-deterministic one 
-one(v) matches {event:'func_pre',name:'foo',args:[v,_]};
-two(v) matches {event:'func_pre',name:'foo',args:[_,v]};
-
-relevant matches one(_)|two(_);
-
-Main=relevant>>{let v; (one(v)\/two(v))/\two(v)};

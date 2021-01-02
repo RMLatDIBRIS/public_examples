@@ -1,6 +1,0 @@
-{"event":"func_pre","name":"enqueue","id":4,"args":[1],"targetId":2,"argIds":[null]}
-{"event":"func_pre","name":"enqueue","id":4,"args":[1],"targetId":2,"argIds":[null]}
-{"event":"func_pre","name":"enqueue","id":4,"args":[2],"targetId":2,"argIds":[null]}
-{"event":"func_post","name":"dequeue","res":1,"args":[]}
-{"event":"func_post","name":"dequeue","res":2,"args":[]}
-{"event":"func_post","name":"dequeue","res":1,"args":[]}

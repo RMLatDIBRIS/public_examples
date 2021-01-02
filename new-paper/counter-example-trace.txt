@@ -1,2 +1,0 @@
-{"event":"func_pre","name":"foo","id":1,"args":[1,2],"targetId":2,"argIds":[null,null]}
-{"event":"func_post","name":"foo","args":[1,2]}
