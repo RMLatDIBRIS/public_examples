@@ -1,0 +1,13 @@
+// single randomized queue with enqueue and dequeue 
+// works with traces generated from list25-random-queue.js
+
+enq(val) matches {event:'func_pre',name:'enqueue',args:[val]};
+deq(val) matches  {event:'func_post',name:'dequeue',res:val};
+relevant matches enq(_) | deq(_);
+
+Main = relevant>>Queue!; 
+Queue = {let val; enq(val) ( deq(val) | Queue)}?; 
+
+
+
+

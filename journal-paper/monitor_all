@@ -1,0 +1,1 @@
+IFS=$'\n';for f in `find -iname '*pl'`; do echo $f; ~/git/RMLatDIBRIS/monitor/monitor.sh $f ${f/\.pl/-trace.txt}; done

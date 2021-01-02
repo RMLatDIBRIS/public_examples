@@ -1,0 +1,11 @@
+// stack2: single stack with push, pop and size
+// works with traces generated from list15-stack-size.js
+
+push(val) matches {event:'func_pre',name:'mypush',args:[val]};
+pop(val) matches  {event:'func_post',name:'mypop',res:val};
+size(s) matches {event:'func_post',name:'size',res:s};
+relevant matches push(_)|pop(_)|size(_);
+
+Stack<s> = size(s) Stack<s> \/
+    { let val; push(val) Stack<s+1> pop(val) Stack<s> }?;
+Main = relevant >> Stack<0>; 

@@ -1,0 +1,31 @@
+// lists_iterators: multiple iterators over multiple lists, weak version
+// works with traces generated from list27-safe-iterators.js
+// verifies only that next(id) occurs after hasNext(id,true) and that the result of hasNext(id,res) can change only after next(id)
+// multiple consecutive occurrences of hasNext are allowed, as long as they are coherent
+// iterators are not required to be fully consumed
+
+
+unsafe (cont_id) matches {event:'func_pre',name:'add'|'remove',args:[cont_id,...]}; // tracks only structural modifications
+hasNext(it_id,res) matches {event:'func_post',name:'hasNext',res:res,args:[it_id]};
+next(it_id) matches {event:'func_pre',name:'next',args:[it_id]};
+newIter(cont_id,it_id) matches {event:'func_post',name:'iterator',res:it_id,args:[cont_id]};
+freeIter(it_id) matches {event:'func_post',name:'free',res:it_id};
+
+newIter(it_id) matches newIter(_,it_id);
+hasNext_or_next(it_id) matches hasNext(it_id,_)|next(it_id);
+iterator matches newIter(_)|hasNext_or_next(_)|freeIter(_);
+not_newIter not matches newIter(_);
+unsafe_or_iter(cont_id,it_id) matches
+   hasNext_or_next(it_id)|freeIter(it_id)|unsafe(cont_id);
+
+relevant matches iterator | unsafe(_);
+
+Main = relevant >> SafeIterators;
+SafeIterators = Safe/\iterator>>Iterators;
+
+Safe = not_newIter*
+   {let cont_id,it_id; newIter(cont_id,it_id)(SafeIter<cont_id,it_id>/\Safe)}?;
+SafeIter<cont_id,it_id> = unsafe_or_iter(cont_id,it_id)>>hasNext_or_next(it_id)* unsafe(cont_id)* freeIter(it_id) all;
+
+Iterators = {let it_id; newIter(it_id)(Iterator<it_id> freeIter(it_id)|Iterators)}?;
+Iterator<it_id> = ((hasNext(it_id,true)+ next(it_id))* hasNext(it_id,false)+)!;

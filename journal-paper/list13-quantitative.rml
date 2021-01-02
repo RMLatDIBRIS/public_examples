@@ -1,0 +1,10 @@
+// quantitative
+// simple quantitative monitoring wit state variables
+// works with traces generated from list13-quantitative.js
+
+available(total) matches {event:'func_post',name:'available',res:total};
+use(total,used) matches {event:'func_pre',name:'use',args:[used]} with used <= total;  
+relevant matches available(_) | use(_,_);
+
+Use<total> = if (total>0) {let used; use(total, used) Use<total-used>} else empty;
+Main = relevant >> {let total; (available(total) Use<total>)!};
