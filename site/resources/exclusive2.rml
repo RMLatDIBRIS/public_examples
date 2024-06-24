@@ -1,14 +1,18 @@
-// exclusive
+// exclusive2
 // exclusive use of resources
 // works with traces generated from exclusive.js
+// more modular solution
 
 acquire(eid,rid) matches {event:'func_pre',name:'acquire',args:[eid,rid,...]};
 release(eid,rid) matches {event:'func_pre',name:'release',args:[eid,rid,...]};
 use(eid,rid) matches {event:'func_pre',name:'use',args:[eid,rid,...]};
 
 notAcqRel(eid,rid) not matches acquire(_,rid) | release(eid,rid);
+notAcq not matches acquire(_,_);
+
 relevant matches acquire(_,_) | release(_,_) | use(_,_);
 
-Main = relevant >> Resources;
-Resources = {let eid,rid; acquire(eid,rid) ((Resources | use(eid,rid)* release(eid,rid)) /\ notAcqRel(eid,rid)* release(eid,rid) all)}?;
+Main = relevant >> (UseAfterAcquire /\ NoMultipleAcquire);
+UseAfterAcquire = {let eid,rid; acquire(eid,rid) (use(eid,rid)* release(eid,rid) | UseAfterAcquire)}?;
+NoMultipleAcquire = notAcq* {let eid,rid; acquire(eid,rid) ((notAcqRel(eid,rid)* release(eid,rid) all) /\ NoMultipleAcquire)}?;
 
